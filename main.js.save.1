@@ -1,0 +1,76 @@
+import fs from 'fs';
+import gm from 'gm';
+import RaspiCam from 'raspicam';
+import dht from 'node-dht-sensor';
+import format from 'date-fns/format';
+import raspiOpts from './src/config/raspicam';
+import  from './src/config/dht';
+
+const toFahrenheit = (cel) => {
+  var tempConvert = cel * 1.8 + 32;
+  // return Math.round(tempConvert * 100) / 100;
+  return +(Math.round(tempConvert + 'e+2') + 'e-2');
+}
+
+const main = async () => {
+  const imgDir = '/home/pi/dev/greenery/images';
+  const opts = raspiOpts;
+  opts.output = imgDir + '/' + Math.floor(new Date() / 1000) + '.' + opts.encoding;
+
+  const camera = new RaspiCam(opts);
+  await camera.start();
+
+  camera.on('exit', async () => {
+   const sensor = {
+      read: async () => {
+        const sensors = dhtOpts.sensors;
+        console.log('DHT', typeof sensors, sensors);
+        const dataOutput = [];
+        for (const i in sensors) {
+          const sensorData = await dht.read(sensors[i].type, sensors[i].pin);
+          const temp = sensorData.temperature.toFixed(1);
+          const humidity = sensorData.humidity.toFixed(1);
+          dataOutput.push({
+            name: sensors[i].name,
+            temperature: +(Math.round((temp * 1.8 + 32) + 'e+2') + 'e-2') + '°F',
+            humidity: humidity,
+            date: format(new Date(), 'ddd, MMM do, YYYY hh:mm A')
+          });
+        }
+        // return sensors.map(async (s, idx) => {
+        //   const sensorData = await dht.read(s.type, s.pin);
+        //   const temp = sensorData.temperature.toFixed(1);
+        //   const humidity = sensorData.humidity.toFixed(1);
+        //   return {
+        //     name: s.name,
+        //     temperature: +(Math.round((temp * 1.8 + 32) + 'e+2') + 'e-2') + '°F',
+        //     humidity: humidity,
+        //     date: format(new Date(), 'ddd, MMM do, YYYY hh:mm A')
+        //   };
+        // });
+      }
+    };
+
+    const t = await sensor.read();
+    const drawText = `${t.name} - ${t.temperature} / {$t.humidity} @ ${t.date}`;
+
+    await gm(opts.output)
+      .gravity('SouthEast')
+      .fill('#fff')
+      .fontSize('50')
+      .font('Arial')
+      .drawText(0, 0, drawText)
+      .write(opts.output, (err) => {
+        if (err) {
+          console.error(err);
+        } else {
+          console.log('image has been altered successfully', opts.output);
+        }
+      });
+
+    console.log('tH', t);
+  });
+};
+
+main();
+

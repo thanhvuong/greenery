@@ -1,0 +1,15 @@
+import RaspiCam from 'raspicam';
+import dht from 'node-dht-sensor';
+import raspiOpts from './src/config/raspicam';
+import dhtOpts from './src/config/dht';
+
+const main = async () => {
+
+  series.then(data => {
+    console.log('done');
+  })
+  .catch(e => console.error(e));
+};
+
+main();
+
