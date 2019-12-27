@@ -1,9 +1,9 @@
 import gm from 'gm';
 import RaspiCam from 'raspicam';
 import format from 'date-fns/format';
-import * as dhtHelper from './src/helpers/dht';
-import * as gmHelper from './src/helpers/gm';
-import { greenery } from './src/config/greenery';
+import * as dhtHelper from './helpers/dht';
+import * as gmHelper from './helpers/gm';
+import { greenery } from './config/greenery';
 
 const main = async () => {
   const imgDir = greenery.settings.baseImgPath;
@@ -27,7 +27,6 @@ const main = async () => {
     } catch(e) {
       console.error('error', e);
     }
-
   });
 };
 

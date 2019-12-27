@@ -1,6 +1,6 @@
 export const greenery = {
   settings: {
-    baseImgPath: '/home/pi/dev/greenery/images',
+    baseImgPath: './images',
     filenameDateFormat: 'X', // https://date-fns.org/docs/format
     dateFormat: 'ddd, MMM do, YYYY hh:mm A', // https://date-fns.org/docs/format
     raspicam: { // reference: https://github.com/troyth/node-raspicam
